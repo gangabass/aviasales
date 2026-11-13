@@ -2,8 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomBytes,createECDH } from 'node:crypto';
 import webpush from 'web-push';
-import worker,{checkMonitor,runChecks} from '../worker/index.mjs';
-import {hash} from '../worker/domain.mjs';
+import worker,{checkMonitor,runChecks} from '../server/api.mjs';
+import {hash} from '../server/domain.mjs';
 import {database} from './helpers.mjs';
 const day=n=>new Date(Date.now()+n*86400000).toISOString().slice(0,10);
 async function setup(){const DB=database();const a='a'.repeat(43),b='b'.repeat(43);DB.sqlite.prepare('INSERT INTO users(id,name,token_hash) VALUES(?,?,?)').run('alice','Алиса',await hash(a));DB.sqlite.prepare('INSERT INTO users(id,name,token_hash) VALUES(?,?,?)').run('bob','Боб',await hash(b));return {DB,a,b,ALLOWED_ORIGINS:'https://example.com',APP_URL:'https://example.com/aviasales/',VAPID_SUBJECT:'mailto:test@example.com',...Object.fromEntries(Object.entries(webpush.generateVAPIDKeys()).map(([k,v])=>[k==='publicKey'?'VAPID_PUBLIC_KEY':'VAPID_PRIVATE_KEY',v]))};}
@@ -52,3 +52,4 @@ test('cron shares identical searches, skips paused and revoked users, honours le
   e.DB.sqlite.exec("DELETE FROM locks; UPDATE users SET active=0 WHERE id='alice'");await runChecks(e);assert.equal(calls,1);
  }finally{globalThis.fetch=original;}
 });
+

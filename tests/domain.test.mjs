@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { validateMonitor,parsePrices,ribbonUrl,hash,shouldNotify } from '../worker/domain.mjs';
+import { validateMonitor,parsePrices,ribbonUrl,hash,shouldNotify } from '../server/domain.mjs';
 const day=n=>new Date(Date.now()+n*86400000).toISOString().slice(0,10);
 const input=()=>({origin:'ikt',destination:'BKK',dateMin:day(2),dateMax:day(20),threshold:25000,directOnly:false});
 test('validation: IATA, dates, threshold, unsupported direct filter',()=>{

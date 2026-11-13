@@ -1,5 +1,5 @@
 import webpush from 'web-push';
-import { HttpError, today, validateMonitor, ribbonUrl, parsePrices, ticketUrl, shouldNotify, hash, publicMonitor, validateSubscription } from './domain.mjs';
+import { HttpError, today, validateMonitor, ribbonUrl, parsePrices, shouldNotify, hash, publicMonitor, validateSubscription } from './domain.mjs';
 const json = (body, status=200) => new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 const all = async (db, sql, ...args) => (await db.prepare(sql).bind(...args).all()).results;
 async function body(req) { if (Number(req.headers.get('content-length')) > 16384) throw new HttpError(413,'Запрос слишком большой.'); const text = await req.text(); if (text.length > 16384) throw new HttpError(413,'Запрос слишком большой.'); try { const parsed=JSON.parse(text); if (!parsed || typeof parsed!=='object' || Array.isArray(parsed)) throw new Error(); return parsed; } catch { throw new HttpError(400,'Некорректный JSON.'); } }
@@ -120,8 +120,5 @@ export default {
   response.headers.set('Access-Control-Allow-Methods','GET,POST,PATCH,DELETE,OPTIONS');
   response.headers.set('Access-Control-Allow-Headers','Authorization,Content-Type');
   return response;
- },
- async scheduled(event,env,ctx) { ctx.waitUntil(runChecks(env)); }
+ }
 };
-
-
