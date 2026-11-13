@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "aviasales-watch",
+  "main": "worker/index.mjs",
+  "compatibility_date": "2026-11-13",
+  "compatibility_flags": ["nodejs_compat"],
+  "triggers": { "crons": ["* * * * *"] },
+  "vars": {
+    "ALLOWED_ORIGINS": "https://gangabass.github.io,http://localhost:5173,http://127.0.0.1:5173",
+    "APP_URL": "https://gangabass.github.io/aviasales/",
+    "VAPID_SUBJECT": "mailto:replace@example.com"
+  },
+  "d1_databases": [{ "binding": "DB", "database_name": "aviasales-watch", "database_id": "REPLACE_WITH_D1_DATABASE_ID", "migrations_dir": "migrations" }]
+}
+
