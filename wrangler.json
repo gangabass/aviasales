@@ -3,13 +3,26 @@
   "name": "aviasales-watch",
   "main": "worker/index.mjs",
   "compatibility_date": "2026-11-13",
-  "compatibility_flags": ["nodejs_compat"],
-  "triggers": { "crons": ["* * * * *"] },
-  "vars": {
-    "ALLOWED_ORIGINS": "https://gangabass.github.io,http://localhost:5173,http://127.0.0.1:5173",
-    "APP_URL": "https://gangabass.github.io/aviasales/",
-    "VAPID_SUBJECT": "mailto:replace@example.com"
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "triggers": {
+    "crons": [
+      "* * * * *"
+    ]
   },
-  "d1_databases": [{ "binding": "DB", "database_name": "aviasales-watch", "database_id": "REPLACE_WITH_D1_DATABASE_ID", "migrations_dir": "migrations" }]
+  "vars": {
+    "ALLOWED_ORIGINS": "https://gangabass.github.io",
+    "APP_URL": "https://gangabass.github.io/aviasales/",
+    "VAPID_SUBJECT": "mailto:gangabass@gmail.com"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "aviasales-watch",
+      "database_id": "e4a3f7af-aaa3-4494-9df1-69546971636b",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "account_id": "30aa7d486c699b406c9dba8c8cd642d4"
 }
-

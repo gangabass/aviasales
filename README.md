@@ -18,6 +18,10 @@ PWA для мониторинга авиабилетов. Frontend публик�
 - Одинаковые запросы объединяются в пределах запуска Cron. Lease в D1 исключает перекрывающиеся запуски. Истёкшие направления завершаются автоматически.
 - Установка PWA, offline-оболочка и тест push. Service worker не кеширует API, токены и цены. Токен сохраняется в localStorage. Выход отключает push устройства и удаляет локальный токен, сохраняя доступ других устройств.
 
+## Состояние подключения
+
+13 ноября 2026: в аккаунте Cloudflare создана отдельная D1 aviasales-watch, ID e4a3f7af-aaa3-4494-9df1-69546971636b. Миграция 0001_init.sql применена удалённо. В wrangler.json записаны account_id, database_id, production origin и VAPID email. Worker и Git Builds ещё не подключены: существующий Wrangler OAuth получает 403 от Builds API; требуется пользовательский API-токен с Workers Builds Configuration Edit. Локальная сборка Worker не запускалась.
+
 ## Первоначальная настройка Cloudflare
 
 1. В Cloudflare Dashboard → Workers & Pages → D1 создайте базу `aviasales-watch`. Скопируйте её ID в `wrangler.json`, поле `d1_databases[0].database_id` вместо заглушки.
@@ -106,3 +110,4 @@ Worker обновится через Cloudflare Builds, PWA — через GitHu
 `npm test` покрывает валидацию, формат API, токены, CORS, разделение владельцев, лимит правил, запрет SSRF через push endpoint, шифрование push, устранение повторов, снижение цены, возврат под порог, ошибки источника/доставки, истечение подписок, объединение запросов и Cron lease. Реальные push и runtime проверяются после облачного деплоя. Браузерная визуальная проверка в текущей сессии была недоступна.
 
 [Cloudflare Workers Builds: настройки](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/), [Cron Triggers](https://developers.cloudflare.com/workers/configuration/cron-triggers/), [лимиты Workers](https://developers.cloudflare.com/workers/platform/limits/).
+
