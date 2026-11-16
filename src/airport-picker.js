@@ -1,14 +1,16 @@
 import airports from './airports.json';
+import cities from './cities.json';
 const normalize = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/ё/g, 'е').trim();
-const catalog = airports.map(([code, cityRu, cityEn, nameRu, nameEn, country]) => ({
+const cityCatalog = cities.map(([code, cityRu, cityEn, country]) => ({code, city: cityRu || cityEn, name: 'Все аэропорты', country, isCity: true, terms: [code, cityRu, cityEn].filter(Boolean).map(normalize)}));
+const catalog = [...cityCatalog, ...airports.map(([code, cityRu, cityEn, nameRu, nameEn, country]) => ({
  code, city: cityRu || cityEn || nameRu || nameEn, name: nameRu || nameEn || code, country,
  terms: [code, cityRu, cityEn, nameRu, nameEn].filter(Boolean).map(normalize)
-}));
+}))];
 export function searchAirports(query, limit = 12) {
  const term = normalize(query);
  if (!term) return [];
  return catalog.map(airport => ({airport, rank: airport.code.toLowerCase() === term ? 0 : airport.terms.some(t => t.startsWith(term)) ? 1 : airport.terms.some(t => t.includes(term)) ? 2 : 3}))
-  .filter(item => item.rank < 3).sort((a,b) => a.rank-b.rank || a.airport.city.localeCompare(b.airport.city, 'ru') || a.airport.code.localeCompare(b.airport.code)).slice(0,limit).map(item => item.airport);
+  .filter(item => item.rank < 3).sort((a,b) => a.rank-b.rank || a.airport.city.localeCompare(b.airport.city, 'ru') || Number(!!b.airport.isCity)-Number(!!a.airport.isCity) || a.airport.code.localeCompare(b.airport.code)).slice(0,limit).map(item => item.airport);
 }
 export function airportField(name, label, initial = '') {
  return `<div class="airport-field"><label for="${name}">${label}</label><input id="${name}" name="${name}" value="${initial}" placeholder="Город или код" required autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="${name}-options" aria-describedby="${name}-hint"><small id="${name}-hint">Город на русском, English или IATA</small><div class="airport-options" id="${name}-options" role="listbox" aria-label="${label}: аэропорты" hidden></div><span class="airport-status" role="status" aria-live="polite"></span></div>`;
@@ -35,7 +37,7 @@ export function attachAirportPicker(input) {
   if (!matches.length) { const empty=document.createElement('p'); empty.textContent='Аэропорты не найдены. Уточните город или код.'; list.append(empty); }
   list.hidden=false; input.setAttribute('aria-expanded','true'); status.textContent = matches.length ? `Найдено вариантов: ${matches.length}` : 'Аэропорты не найдены';
  };
- input.addEventListener('input',() => { selected=null; hint.textContent='Выберите аэропорт из списка'; input.setCustomValidity('Выберите аэропорт из списка.'); show(); });
+ input.addEventListener('input',() => { selected=null; hint.textContent='Выберите город или аэропорт из списка'; input.setCustomValidity('Выберите город или аэропорт из списка.'); show(); });
  input.addEventListener('focus',show);
  input.addEventListener('blur',() => { const exact=matches.find(a => a.code.toLowerCase() === input.value.trim().toLowerCase()); if(exact) select(exact); close(); });
  input.addEventListener('keydown',e => {
