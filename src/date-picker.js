@@ -19,7 +19,14 @@ export function attachDatePicker(input) {
  function close() {popup.hidden=true;toggle.setAttribute('aria-expanded','false');}
  function render() {
   const year=month.getFullYear(), m=month.getMonth(), offset=(new Date(year,m,1).getDay()+6)%7, days=new Date(year,m+1,0).getDate();
-  popup.innerHTML=`<div class="date-navigation"><button type="button" data-step="-1" aria-label="Предыдущий месяц">‹</button><strong aria-live="polite">${month.toLocaleDateString('ru-RU',{month:'long',year:'numeric'})}</strong><button type="button" data-step="1" aria-label="Следующий месяц">›</button></div><div class="date-grid">${['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(d=>`<span>${d}</span>`).join('')}${'<span></span>'.repeat(offset)}${Array.from({length:days},(_,i)=>{const value=iso(new Date(year,m,i+1));return `<button type="button" data-date="${value}" ${value<input.min?'disabled':''} aria-label="${format(value)}" aria-pressed="${value===input.value}">${i+1}</button>`;}).join('')}</div>`;
+  const markup=`<div class="date-navigation"><button type="button" data-step="-1" aria-label="Предыдущий месяц">‹</button><strong aria-live="polite">${month.toLocaleDateString('ru-RU',{month:'long',year:'numeric'})}</strong><button type="button" data-step="1" aria-label="Следующий месяц">›</button></div><div class="date-grid">${['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(d=>`<span>${d}</span>`).join('')}${'<span></span>'.repeat(offset)}${Array.from({length:days},(_,i)=>{const value=iso(new Date(year,m,i+1));return `<button type="button" data-date="${value}" ${value<input.min?'disabled':''} aria-label="${format(value)}" aria-pressed="${value===input.value}">${i+1}</button>`;}).join('')}</div>`;
+  // Keep navigation buttons mounted so focus and the bubbling click remain inside the picker.
+  if (!popup.firstElementChild) popup.innerHTML=markup;
+  else {
+   const template=document.createElement('template'); template.innerHTML=markup;
+   popup.querySelector('strong').textContent=template.content.querySelector('strong').textContent;
+   popup.querySelector('.date-grid').replaceChildren(...template.content.querySelector('.date-grid').childNodes);
+  }
  }
  toggle.onclick=()=>{if(!popup.hidden){close();return;} const value=input.value||input.min;month=new Date(value+'T12:00:00');month.setDate(1);render();popup.hidden=false;toggle.setAttribute('aria-expanded','true');};
  popup.onclick=e=>{const button=e.target.closest('button');if(!button)return;if(button.dataset.step){month.setMonth(month.getMonth()+Number(button.dataset.step));render();}else if(button.dataset.date){input.value=button.dataset.date;sync();input.dispatchEvent(new Event('change',{bubbles:true}));close();toggle.focus();}};
